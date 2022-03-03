@@ -1,0 +1,99 @@
+﻿@page "/myorders/{orderId:int}"
+@inject OrdersClient _ordersClient
+
+<div class="main">
+    @if (_invalidOrder)
+    {
+        <h2>Nope</h2>
+        <p>Sorry, this order could not be loaded.</p>
+    }
+    else if (_orderWithStatus == null)
+    {
+        <text>Loading...</text>
+    }
+    else
+    {
+        <div class="track-order">
+            <div class="track-order-title">
+                <h2>
+                    Order placed @_orderWithStatus.Order.CreatedTime.ToLongDateString()
+                </h2>
+                <p class="ml-auto mb-0">
+                    Status: <strong>@_orderWithStatus.StatusText</strong>
+                </p>
+            </div>
+            <div class="track-order-body">
+                <div class="track-order-details">
+                    <OrderReview Order="_orderWithStatus.Order" />
+
+                    @if (_orderWithStatus.IsPlaced)
+                    {
+                        <button class="btn btn-primary" @onclick="Prepare">Start Preparing</button>
+                    }
+                    @if (_orderWithStatus.IsPreparing)
+                    {
+                        <button class="btn btn-primary sign-out" @onclick="OutForDelivery">Out for Delivery</button>
+                    }
+                    @if (_orderWithStatus.IsOutForDelivery)
+                    {
+                        <button class="btn btn-primary sign-out" @onclick="Delivered">Delivered</button>
+                    }
+                </div>
+                <div class="track-order-map">
+                    <Map Zoom="13" Markers="_orderWithStatus.MapMarkers"></Map>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public int OrderId { get; set; }
+    private OrderWithStatus _orderWithStatus;
+    private bool _invalidOrder;
+
+    private async Task Prepare()
+    {
+        await _ordersClient.Prepare(OrderId);
+        _orderWithStatus = await _ordersClient.GetOrder(OrderId);
+        StateHasChanged();
+    }
+
+    private async Task OutForDelivery()
+    {
+        await _ordersClient.OutForDelivery(OrderId);
+        _orderWithStatus = await _ordersClient.GetOrder(OrderId);
+        StateHasChanged();
+    }
+
+    private async Task Delivered()
+    {
+        await _ordersClient.Deliver(OrderId);
+        _orderWithStatus = await _ordersClient.GetOrder(OrderId);
+        StateHasChanged();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await base.OnParametersSetAsync();
+        await GetOrderDetails();
+    }
+
+    private async Task GetOrderDetails()
+    {
+        _invalidOrder = false;
+
+        try
+        {
+            _orderWithStatus = await _ordersClient.GetOrder(OrderId);
+            StateHasChanged();
+        }
+        catch (Exception)
+        {
+            _invalidOrder = true;
+            StateHasChanged();
+        }
+
+    }
+}

@@ -1,0 +1,176 @@
+@model dynamic
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = null;
+}
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+    <title>Task</title>
+  </head>
+  <body style="padding-top: 50px;">
+
+    <div class="container">
+
+        <div class="row">
+            <div class="col-md">
+                <form method="post" action="@Url.Action("Save", "Mvc", new { Model.Sku })">
+                    <div class="mb-3">
+                        <label class="form-label">SKU</label>
+                        <div class="row">
+                            <label class="form-label"><strong><a href="@Url.Action("Images", "Mvc", new { Model.Sku })">abc123</a></strong></label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                      <label class="form-label">Name</label>
+                      <input name="name" type="text" class="form-control" value="@Model.Name">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        <textarea name="description" class="form-control">@Model.Description</textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save Product Info</button>
+                </form>
+            </div>
+
+            <div class="col-md">
+
+                <div class="row mb-3">
+                    <label class="form-label">Status</label>
+                    <div>
+                        <strong><span id="forSaleStatus"></span></strong>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <label class="form-label">Price</label>
+                    <div class="input-group">
+                        <span class="input-group-text">$</span>
+                        <span class="input-group-text" style="width: 100px;" id="productPrice"></span>
+                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false"></button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#priceModal">Increase Price</a></li>
+                            <li><a class="dropdown-item" href="#">Decrease Price</a></li>
+                            <li><a class="dropdown-item" href="#" id="setAsUnavailable" onclick="setAsUnavailable()">Set As Unavailable</a></li>
+                            <li><a class="dropdown-item" href="#" id="setAsAvailable" onclick="setAsAvailable()">Set As Available</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <label class="form-label">Cost</label>
+                    <div class="input-group">
+                        <span class="input-group-text">$</span>
+                        <span class="input-group-text" style="width: 100px;">50</span>
+                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false"></button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#priceModal">Cost Increase</a></li>
+                            <li><a class="dropdown-item" href="#">Cost Decrease</a></li>
+                            <li><a class="dropdown-item" href="#">Backordered</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <label class="form-label">Quantity</label>
+                    <div class="input-group">
+                        <span class="input-group-text" style="width: 100px;" id="quantityOnHand"></span>
+                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false"></button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#inventoryModal">Inventory Adjustment</a></li>
+                            <li><a class="dropdown-item" href="#">Ship Product</a></li>
+                            <li><a class="dropdown-item" href="#">Receive Product</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Price Modal -->
+    <div class="modal fade" id="priceModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Increase Price</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label class="form-label">SKU</label>
+                        <div class="row">
+                            <label class="form-label"><strong>abc123</strong></label>
+                        </div>
+                      </div>
+                    <div class="mb-3">
+                      <label class="form-label">Name</label>
+                      <div class="row">
+                        <label class="form-label"><strong>Domain-Driven Design: Tackling Complexity in the Heart of Software</strong></label>
+                    </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">New Price</label>
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input id="priceIncreaseAmount" type="text" class="form-control" aria-label="50" value="">
+                            <span class="input-group-text">CAD</span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="increasePrice('abc123', document.getElementById('priceIncreaseAmount').value)" data-bs-dismiss="modal">Increase Price</button>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <!-- Inventory Modal -->
+    <div class="modal fade" id="inventoryModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Inventory Adjustment</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label class="form-label">SKU</label>
+                        <div class="row">
+                            <label class="form-label"><strong>abc123</strong></label>
+                        </div>
+                      </div>
+                    <div class="mb-3">
+                      <label class="form-label">Name</label>
+                      <div class="row">
+                        <label class="form-label"><strong>Domain-Driven Design: Tackling Complexity in the Heart of Software</strong></label>
+                      </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Adjustment</label>
+                        <input type="number" class="form-control" value="" id="inventoryAdjustmentQuantity" />
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="inventoryAdjustment('abc123', document.getElementById('inventoryAdjustmentQuantity').value)" data-bs-dismiss="modal">Adjust Inventory</button>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <script src="/js/site.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
+  </body>
+</html>

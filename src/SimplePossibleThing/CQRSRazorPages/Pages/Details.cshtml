@@ -1,0 +1,37 @@
+@page
+@model CQRSRazorPages.Pages.Details
+
+<div class="row">
+    <label class="col-sm-1 col-form-label">Id</label>
+    <div class="col-sm-10">
+        <input type="text" readonly class="form-control-plaintext" value="@Model.InventoryItem.Id">
+    </div>
+</div>
+<div class="row">
+    <label class="col-sm-1 col-form-label">Name</label>
+    <div class="col-sm-10">
+        <input type="text" readonly class="form-control-plaintext" value="@Model.InventoryItem.Name">
+    </div>
+</div>
+<div class="row">
+    <label class="col-sm-1 col-form-label">Count</label>
+    <div class="col-sm-10">
+        <input type="text" readonly class="form-control-plaintext" value=" @Model.InventoryItem.CurrentCount">
+    </div>
+</div>
+
+
+@{
+    var q = new Dictionary<string, string>
+    {
+        { "id", Model.InventoryItem.Id.ToString() },
+        { "version", Model.InventoryItem.Version.ToString() }
+    };
+}
+
+<ul class="list-group">
+    <li class="list-group-item"><a asp-page="/ChangeName" asp-all-route-data="q">Change Name</a></li>
+    <li class="list-group-item"><a asp-page="/Deactivate" asp-all-route-data="q">Deactivate</a></li>
+    <li class="list-group-item"><a asp-page="/CheckIn" asp-all-route-data="q">Check In</a></li>
+    <li class="list-group-item"><a asp-page="/Remove" asp-all-route-data="q">Remove</a></li>
+</ul>

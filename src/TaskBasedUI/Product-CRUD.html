@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+    <title>CRUD</title>
+  </head>
+  <body style="padding-top: 50px;">
+    
+    <div class="container">
+    <form>
+      <div class="mb-3">
+        <label class="form-label">SKU</label>
+        <div class="row">
+            <label class="form-label"><strong>0321125215</strong></label>
+        </div>
+      </div>
+        <div class="mb-3">
+          <label class="form-label">Name</label>
+          <input type="text" class="form-control" value="Domain-Driven Design: Tackling Complexity in the Heart of Software">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Description</label>
+            <textarea class="form-control">Leading software designers have recognized domain modeling and design as critical topics for at least twenty years, yet surprisingly little has been written about what needs to be done or how to do it. Although it has never been clearly formulated, a philosophy has developed as an undercurrent in the object community, which I call "domain-driven design".</textarea>
+        </div>
+        <div class="row mb-3">
+            <div class="col-sm">
+                <label class="form-label">Price</label>
+                <div class="input-group">
+                    <span class="input-group-text">$</span>
+                    <input type="text" class="form-control" aria-label="50" value="85.00">
+                    <span class="input-group-text">CAD</span>
+                </div>
+            </div>
+            <div class="col-sm">
+                <label class="form-label">Cost</label>
+                <div class="input-group">
+                    <span class="input-group-text">$</span>
+                    <input type="text" class="form-control" aria-label="50" value="50">
+                    <span class="input-group-text">CAD</span>
+                </div>
+            </div>
+            <div class="col-sm">
+                <label class="form-label">Quantity</label>
+                <input type="text" class="form-control" value="17">
+            </div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">For Sale</label>
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" checked>
+            </div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Free Shippping</label>
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
+            </div>
+        </div>
+       
+        <button type="submit" class="btn btn-primary">Save</button>
+      </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
+  </body>
+</html>

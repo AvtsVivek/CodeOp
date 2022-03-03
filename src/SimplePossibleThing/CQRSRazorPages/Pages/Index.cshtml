@@ -1,0 +1,22 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<div class="text-center">
+    <h2>All items:</h2>
+        <ul class="list-group">
+        @foreach (var inventoryItemListDto in Model.InventoryItems)
+        {
+            var q = new Dictionary<string, string>
+            {
+                { "id", inventoryItemListDto.Id.ToString() }
+            };
+            <li class="list-group-item">
+                <a asp-page="/Details" asp-all-route-data="q">@inventoryItemListDto.Name</a>
+            </li>
+        }
+        </ul>
+        <a asp-page="/Add">Add</a>
+</div>

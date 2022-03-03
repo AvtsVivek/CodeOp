@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <RootNamespace>Demo</RootNamespace>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\Catalog\Catalog.csproj" />
+    <ProjectReference Include="..\Purchasing\Purchasing.csproj" />
+    <ProjectReference Include="..\Sales\Sales.csproj" />
+    <ProjectReference Include="..\Warehouse\Warehouse.csproj" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.0.7" />
+  </ItemGroup>
+
+</Project>

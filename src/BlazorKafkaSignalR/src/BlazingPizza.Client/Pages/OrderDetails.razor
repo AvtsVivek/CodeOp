@@ -1,0 +1,113 @@
+﻿@page "/myorders/{orderId:int}"
+@using Microsoft.AspNetCore.SignalR.Client
+@implements IAsyncDisposable
+@inject NavigationManager _navigationManager
+@inject IAccessTokenProvider _tokenProvider;
+@inject OrdersClient _ordersClient
+@attribute [Authorize]
+
+<div class="main">
+    @if (_invalidOrder)
+    {
+        <h2>Nope</h2>
+        <p>Sorry, this order could not be loaded.</p>
+    }
+    else if (_orderWithStatus == null)
+    {
+        <text>Loading...</text>
+    }
+    else
+    {
+        <div class="track-order">
+            <div class="track-order-title">
+                <h2>
+                    Order placed @_orderWithStatus.Order.CreatedTime.ToLongDateString()
+                </h2>
+                <p class="ml-auto mb-0">
+                    Status: <strong>@_orderWithStatus.StatusText</strong>
+                </p>
+            </div>
+            <div class="track-order-body">
+                <div class="track-order-details">
+                    <OrderReview Order="_orderWithStatus.Order" />
+                </div>
+                <div class="track-order-map">
+                    <Map Zoom="13" Markers="_orderWithStatus.MapMarkers"></Map>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public int OrderId { get; set; }
+    private HubConnection _hubConnection;
+    private OrderWithStatus _orderWithStatus;
+    private bool _invalidOrder;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await base.OnParametersSetAsync();
+        await GetOrderDetails();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var tokenResult = await _tokenProvider.RequestAccessToken();
+        tokenResult.TryGetToken(out var token);
+
+        _hubConnection = new HubConnectionBuilder()
+            .WithUrl(_navigationManager.ToAbsoluteUri("https://localhost:6001/customer/orderhub"), options =>
+              {
+                  options.AccessTokenProvider = () => Task.FromResult(token.Value);
+              })
+            .Build();
+
+        _hubConnection.On("OrderBeingPrepared", async () =>
+        {
+            Console.WriteLine("SignalR Event: OrderBeingPrepared");
+            await GetOrderDetails();
+            StateHasChanged();
+        });
+
+        _hubConnection.On("OrderPickedUpForDelivery", async () =>
+        {
+            await GetOrderDetails();
+            StateHasChanged();
+        });
+
+        _hubConnection.On("OrderDelivered", async () =>
+        {
+            await GetOrderDetails();
+            StateHasChanged();
+        });
+
+        await _hubConnection.StartAsync();
+        await _hubConnection.InvokeAsync("WatchOrder", OrderId);
+    }
+
+    private async Task GetOrderDetails()
+    {
+        try
+        {
+            _orderWithStatus = await _ordersClient.GetOrder(OrderId);
+            StateHasChanged();
+        }
+        catch (AccessTokenNotAvailableException ex)
+        {
+            ex.Redirect();
+        }
+        catch (Exception ex)
+        {
+            _invalidOrder = true;
+            Console.Error.WriteLine(ex);
+            StateHasChanged();
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await _hubConnection.DisposeAsync();
+    }
+}

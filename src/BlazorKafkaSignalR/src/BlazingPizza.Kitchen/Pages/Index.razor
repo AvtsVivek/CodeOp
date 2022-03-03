@@ -1,0 +1,61 @@
+﻿@page "/"
+@using Microsoft.AspNetCore.SignalR.Client
+@inject NavigationManager _navigationManager
+@inject OrdersClient _ordersClient
+@implements IAsyncDisposable
+
+<div class="main">
+    <TemplatedList Loader="@LoadOrders" ListGroupClass="orders-list" @ref="_ordersList">
+        <Loading>Loading...</Loading>
+        <Empty>
+            <h2>No orders placed</h2>
+            <a class="btn btn-success" href="">Order some pizza</a>
+        </Empty>
+        <Item Context="item">
+            <div class="col">
+                <h5>@item.Order.CreatedTime.ToLongDateString()</h5>
+                Items:
+                <strong>@item.Order.Pizzas.Count()</strong>;
+                Total price:
+                <strong>£@item.Order.GetFormattedTotalPrice()</strong>
+            </div>
+            <div class="col">
+                Status: <strong>@item.StatusText</strong>
+            </div>
+            <div class="col flex-grow-0">
+                <a href="myorders/@item.Order.OrderId" class="btn btn-success">
+                    View &gt;
+                </a>
+            </div>
+        </Item>
+    </TemplatedList>
+</div>
+
+@code {
+    private HubConnection _hubConnection;
+    private TemplatedList<OrderWithStatus> _ordersList;
+    protected override async Task OnInitializedAsync()
+    {
+        _hubConnection = new HubConnectionBuilder()
+            .WithUrl(_navigationManager.ToAbsoluteUri("https://localhost:6001/kitchen/orderhub"))
+            .Build();
+
+        _hubConnection.On("OrderPlaced", async () =>
+        {
+            await _ordersList.Reload();
+            StateHasChanged();
+        });
+
+        await _hubConnection.StartAsync();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await _hubConnection.DisposeAsync();
+    }
+
+    async Task<IEnumerable<OrderWithStatus>> LoadOrders()
+    {
+        return await _ordersClient.GetOrders();
+    }
+}
